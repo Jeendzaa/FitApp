@@ -44,7 +44,7 @@ namespace FitApp.Controllers
         }
 
         // GET: api/users/by-mail/{mail}
-        [HttpGet("by-name/{mail}")]
+        [HttpGet("by-mail/{mail}")]
         public async Task<ActionResult<User>> GetUserByMail(string name)
         {
             var users = await _context.Users
@@ -57,7 +57,7 @@ namespace FitApp.Controllers
 
         // POST: api/users/register
         [HttpPost("register")]
-        public async Task<ActionResult<User>> RegisterUser(User newUser)
+        public async Task<ActionResult<User>> RegisterUser([FromBody] User newUser)
         {
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.UserEmail == newUser.UserEmail);
             if ( existingUser != null ) return BadRequest("Email is taken");

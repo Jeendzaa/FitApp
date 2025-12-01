@@ -1,7 +1,5 @@
 ﻿using FitApp.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Data.Common;
 
 namespace FitApp.Data
 {
@@ -11,7 +9,7 @@ namespace FitApp.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<DailyReport> DailyReports { get; set; }
-        public DbSet<Meal> MealReports { get; set; }
+        public DbSet<Meal> Meals { get; set; }
         public DbSet<MealEntry> MealEntries {  get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
