@@ -10,11 +10,20 @@ namespace FitApp.Controllers
     public class MealEntryController : Controller
     {
         private readonly AppDbContext _context;
+
+        /// <summary>
+        /// Controller for managing meal entries.
+        /// Provides endpoints to create, read, update, and delete meal entries.
+        /// </summary>
         public MealEntryController(AppDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Retrieves all meal entries with related meal and daily report data.
+        /// </summary>
+        /// <returns>A list of <see cref="MealEntry"/> objects.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MealEntry>>> GetMealEntries()
         {
@@ -26,6 +35,11 @@ namespace FitApp.Controllers
             return Ok(mealEntries);
         }
 
+        /// <summary>
+        /// Retrieves all meal entries associated with a specific daily report.
+        /// </summary>
+        /// <param name="dailyId">The ID of the daily report.</param>
+        /// <returns>A list of <see cref="MealEntry"/> objects for the given daily report.</returns>
         [HttpGet("daily/{dailyId}")]
         public async Task<ActionResult<IEnumerable<MealEntry>>> GetMealEntryByDaily(int id)
         {
@@ -40,6 +54,11 @@ namespace FitApp.Controllers
             return Ok(mealEntry);
         }
 
+        /// <summary>
+        /// Retrieves a specific meal entry by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the meal entry.</param>
+        /// <returns>The <see cref="MealEntry"/> object if found, otherwise 404 Not Found.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<MealEntry>> GetMealEntryById(int id)
         {
@@ -54,6 +73,11 @@ namespace FitApp.Controllers
             return Ok(mealEntry);
         }
 
+        /// <summary>
+        /// Creates a new meal entry linked to a daily report and a meal.
+        /// </summary>
+        /// <param name="newMeal">The new <see cref="MealEntry"/> object to create.</param>
+        /// <returns>The created <see cref="MealEntry"/> object with its ID.</returns>
         [HttpPost]
         public async Task<ActionResult<MealEntry>> CreateMealEntry([FromBody] MealEntry newMeal)
         {
@@ -71,6 +95,12 @@ namespace FitApp.Controllers
             return CreatedAtAction(nameof(CreateMealEntry), new {id = newMeal.MealEntryId}, newMeal);
         }
 
+        /// <summary>
+        /// Updates an existing meal entry.
+        /// </summary>
+        /// <param name="id">The ID of the meal entry to update.</param>
+        /// <param name="updatedEntry">The updated <see cref="MealEntry"/> object.</param>
+        /// <returns>No content if successful, otherwise 400 or 404 error.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> EditMealEntry(int id, [FromBody] MealEntry updatedEntry)
         {
@@ -90,6 +120,11 @@ namespace FitApp.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Deletes a meal entry by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the meal entry to delete.</param>
+        /// <returns>No content if successful, otherwise 404 error if not found.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMealEntry(int id)
         {

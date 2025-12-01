@@ -10,11 +10,19 @@ namespace FitApp.Controllers
     public class DailyController : Controller
     {
         private readonly AppDbContext _context;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DailyController"/> class.
+        /// </summary>
+        /// <param name="context">Database context for accessing application data.</param>
         public DailyController(AppDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Retrieves all daily reports with related user and meal entries.
+        /// </summary>
+        /// <returns>A list of <see cref="DailyReport"/> objects.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DailyReport>>> GetAllDailies()
         {
@@ -26,6 +34,11 @@ namespace FitApp.Controllers
             return Ok(dailies);
         }
 
+        /// <summary>
+        /// Retrieves all daily reports for a specific user.
+        /// </summary>
+        /// <param name="id">The user ID.</param>
+        /// <returns>A list of <see cref="DailyReport"/> objects for the given user.</returns>
         [HttpGet("user/{id}")]
         public async Task<ActionResult<IEnumerable<DailyReport>>> GetUserDailies(int id)
         {
@@ -40,6 +53,12 @@ namespace FitApp.Controllers
             return Ok(dailies);
         }
 
+        /// <summary>
+        /// Retrieves a daily report for a specific user on a given date.
+        /// </summary>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="date">The date of the daily report.</param>
+        /// <returns>A <see cref="DailyReport"/> object if found.</returns>
         [HttpGet("user/{userId}/date/{date}")]
         public async Task<ActionResult<DailyReport>> GetUserDailyByDate(int userId, DateTime date)
         {
@@ -53,6 +72,11 @@ namespace FitApp.Controllers
             return Ok(daily);
         }
 
+        /// <summary>
+        /// Creates a new daily report for a user.
+        /// </summary>
+        /// <param name="newDaily">The new daily report object.</param>
+        /// <returns>The created <see cref="DailyReport"/> object.</returns>
         [HttpPost]
         public async Task<ActionResult<DailyReport>> CreateDaily([FromBody] DailyReport newDaily)
         {
@@ -71,6 +95,11 @@ namespace FitApp.Controllers
             return CreatedAtAction(nameof(GetUserDailyByDate), new {userId = newDaily.UserId, date = newDaily.DailyReportDate}, newDaily);
         }
 
+        /// <summary>
+        /// Creates a new daily report for a user.
+        /// </summary>
+        /// <param name="newDaily">The new daily report object.</param>
+        /// <returns>The created <see cref="DailyReport"/> object.</returns>
         [HttpPut]
         public async Task<IActionResult> EditDaily(int id, [FromBody] DailyReport updatedDaily)
         {
@@ -91,6 +120,11 @@ namespace FitApp.Controllers
             return Ok(daily);
         }
 
+        /// <summary>
+        /// Deletes a daily report by ID.
+        /// </summary>
+        /// <param name="id">The ID of the daily report to delete.</param>
+        /// <returns>The deleted <see cref="DailyReport"/> object.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDaily(int id)
         {
