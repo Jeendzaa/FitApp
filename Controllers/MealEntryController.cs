@@ -61,7 +61,7 @@ namespace FitApp.Controllers
             if (daily == null)
                 return BadRequest("Daily not found");
 
-            var meal = await _context.MealReports.FindAsync(newMeal.MealId);
+            var meal = await _context.Meals.FindAsync(newMeal.MealId);
             if (meal == null)
                 return BadRequest("Meal not found");
 

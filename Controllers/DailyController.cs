@@ -41,14 +41,14 @@ namespace FitApp.Controllers
         }
 
         [HttpGet("user/{userId}/date/{date}")]
-        public async Task<ActionResult<DailyReport>> GetUserDailyByDate(int id, DateTime date)
+        public async Task<ActionResult<DailyReport>> GetUserDailyByDate(int userId, DateTime date)
         {
             var daily = await _context.DailyReports
                 .Include (d => d.MealEntries)
-                .FirstOrDefaultAsync(d => d.UserId == id && d.DailyReportDate.Date == date);
+                .FirstOrDefaultAsync(d => d.UserId == userId && d.DailyReportDate.Date == date);
 
             if (daily == null)
-                return NotFound($"No day {date: yyyy - MM - dd} found for user {id}.");
+                return NotFound($"No day {date: yyyy - MM - dd} found for user {userId}.");
 
             return Ok(daily);
         }
@@ -63,7 +63,7 @@ namespace FitApp.Controllers
             var existing = await _context.DailyReports
                 .FirstOrDefaultAsync(d => d.UserId == newDaily.UserId && d.DailyReportDate.Date == newDaily.DailyReportDate.Date);
 
-            if (existing == null)
+            if (existing != null)
                 return BadRequest("This day has already been created");
 
             _context.DailyReports.Add(newDaily);

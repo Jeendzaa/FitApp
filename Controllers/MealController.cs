@@ -19,14 +19,14 @@ namespace FitApp.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Meal>>> GetAllMeals()
         {
-            var meals = await _context.MealReports.ToListAsync();
+            var meals = await _context.Meals.ToListAsync();
             return Ok(meals);
         }
 
         [HttpGet("id")]
         public async Task<ActionResult<Meal>> GetMealById(int id)
         {
-            var meal = await _context.MealReports.FindAsync(id);
+            var meal = await _context.Meals.FindAsync(id);
             if (meal == null)
                 return NotFound("Meal not found");
             return Ok(meal);
@@ -35,13 +35,13 @@ namespace FitApp.Controllers
         [HttpGet("by-name/{name}")]
         public async Task<ActionResult<IEnumerable<Meal>>> GetMealByName(string name)
         {
-            var meals = await _context.MealReports
+            var meals = await _context.Meals
                 .Where(m => m.MealName.ToLower().Contains(name.ToLower()))
                 .ToListAsync();
             if (meals.Count == 0)
                 return NotFound("Meals not found");
             return Ok(meals);
-                
+
         }
 
         [HttpPost]
@@ -49,10 +49,10 @@ namespace FitApp.Controllers
         {
             if (string.IsNullOrWhiteSpace(newMeal.MealName))
                 return BadRequest("Name of meal is empty");
-            _context.MealReports.Add(newMeal);
+            _context.Meals.Add(newMeal);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetMealById), new {id = newMeal.MealId}, newMeal);
+            return CreatedAtAction(nameof(GetMealById), new { id = newMeal.MealId }, newMeal);
         }
 
         [HttpPut("id")]
@@ -61,7 +61,7 @@ namespace FitApp.Controllers
             if (id != updatedMeal.MealId)
                 return BadRequest("The ID from the URL does not match the meal ID");
 
-            var meal = await _context.MealReports.FindAsync(id);
+            var meal = await _context.Meals.FindAsync(id);
             if (meal == null)
                 return BadRequest("Meal not found");
 
@@ -75,14 +75,14 @@ namespace FitApp.Controllers
             return NoContent();
         }
 
-        [HttpDelete("id")]
-        public async Task<ActionResult<IEnumerable<Meal>>> DeleteMeal(int id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteMeal(int id)
         {
-            var meal = await _context.MealEntries.FindAsync(id);
+            var meal = await _context.Meals.FindAsync(id);
             if (meal == null)
                 return BadRequest("Meal not found");
 
-            _context.MealEntries.Remove(meal);
+            _context.Meals.Remove(meal);
             await _context.SaveChangesAsync();
             return NoContent();
         }

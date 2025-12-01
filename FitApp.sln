@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitApp", "FitApp.csproj", "{DB9F60D5-3183-4340-B056-58DC5CA3E11C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitApp", "FitApp.csproj", "{DB9F60D5-3183-4340-B056-58DC5CA3E11C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitApp.Tests", "..\FitApp.Tests\FitApp.Tests.csproj", "{DF7DE0B8-B590-4F6D-9DFF-C6E7F8310F3A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DB9F60D5-3183-4340-B056-58DC5CA3E11C} = {DB9F60D5-3183-4340-B056-58DC5CA3E11C}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +20,10 @@ Global
 		{DB9F60D5-3183-4340-B056-58DC5CA3E11C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB9F60D5-3183-4340-B056-58DC5CA3E11C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB9F60D5-3183-4340-B056-58DC5CA3E11C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF7DE0B8-B590-4F6D-9DFF-C6E7F8310F3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF7DE0B8-B590-4F6D-9DFF-C6E7F8310F3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF7DE0B8-B590-4F6D-9DFF-C6E7F8310F3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF7DE0B8-B590-4F6D-9DFF-C6E7F8310F3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
