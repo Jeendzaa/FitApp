@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace FitApp.Migrations
+namespace FitApp.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251127175438_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260210174021_Mig")]
+    partial class Mig
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -90,7 +90,7 @@ namespace FitApp.Migrations
 
                     b.HasKey("MealId");
 
-                    b.ToTable("MealReports");
+                    b.ToTable("Meals");
                 });
 
             modelBuilder.Entity("FitApp.Models.MealEntry", b =>
@@ -129,6 +129,9 @@ namespace FitApp.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+
+                    b.Property<int>("DailyCalorieGoal")
+                        .HasColumnType("int");
 
                     b.Property<int>("UserBmi")
                         .HasColumnType("int");

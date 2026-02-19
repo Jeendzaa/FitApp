@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace FitApp.Migrations
+namespace FitApp.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
@@ -87,7 +87,7 @@ namespace FitApp.Migrations
 
                     b.HasKey("MealId");
 
-                    b.ToTable("MealReports");
+                    b.ToTable("Meals");
                 });
 
             modelBuilder.Entity("FitApp.Models.MealEntry", b =>
@@ -126,6 +126,9 @@ namespace FitApp.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+
+                    b.Property<int>("DailyCalorieGoal")
+                        .HasColumnType("int");
 
                     b.Property<int>("UserBmi")
                         .HasColumnType("int");

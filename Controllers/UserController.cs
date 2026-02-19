@@ -127,6 +127,20 @@ namespace FitApp.Controllers
             return NoContent();
         }
 
+        [HttpPut("{id}/weight")]
+        public async Task<IActionResult> UpdateWeight(int id, [FromBody] int newWeight)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+                return NotFound("User not found");
+
+            user.UserCurrentWeight = newWeight;
+
+            await _context.SaveChangesAsync();
+            return Ok(user.UserCurrentWeight);
+        }
+
+
         /// <summary>
         /// Deletes a user by their ID.
         /// </summary>

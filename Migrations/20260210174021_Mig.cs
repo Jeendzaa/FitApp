@@ -3,16 +3,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace FitApp.Migrations
+namespace FitApp.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Mig : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "MealReports",
+                name: "Meals",
                 columns: table => new
                 {
                     MealId = table.Column<int>(type: "int", nullable: false)
@@ -25,7 +25,7 @@ namespace FitApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MealReports", x => x.MealId);
+                    table.PrimaryKey("PK_Meals", x => x.MealId);
                 });
 
             migrationBuilder.CreateTable(
@@ -39,7 +39,8 @@ namespace FitApp.Migrations
                     UserPassword = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserDateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserCurrentWeight = table.Column<int>(type: "int", nullable: false),
-                    UserBmi = table.Column<int>(type: "int", nullable: false)
+                    UserBmi = table.Column<int>(type: "int", nullable: false),
+                    DailyCalorieGoal = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -93,9 +94,9 @@ namespace FitApp.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MealEntries_MealReports_MealId",
+                        name: "FK_MealEntries_Meals_MealId",
                         column: x => x.MealId,
-                        principalTable: "MealReports",
+                        principalTable: "Meals",
                         principalColumn: "MealId",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -126,7 +127,7 @@ namespace FitApp.Migrations
                 name: "DailyReports");
 
             migrationBuilder.DropTable(
-                name: "MealReports");
+                name: "Meals");
 
             migrationBuilder.DropTable(
                 name: "Users");
