@@ -1,71 +1,55 @@
-﻿using FitApp.Data;
+﻿using FitApp.Api.DTO;
+using FitApp.Data;
 using FitApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitApp.Controllers
 {
-    [Route("api/{controller}")]
+    [Route("api/[controller]")] 
     [ApiController]
     public class MealEntryController : Controller
     {
         private readonly AppDbContext _context;
 
-        /// <summary>
-        /// Controller for managing meal entries.
-        /// Provides endpoints to create, read, update, and delete meal entries.
-        /// </summary>
         public MealEntryController(AppDbContext context)
         {
             _context = context;
         }
 
-        /// <summary>
-        /// Retrieves all meal entries with related meal and daily report data.
-        /// </summary>
-        /// <returns>A list of <see cref="MealEntry"/> objects.</returns>
+        // GET: api/MealEntry
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MealEntry>>> GetMealEntries()
         {
             var mealEntries = await _context.MealEntries
-                .Include(me => me.Meal)
-                .Include(me => me.DailyReport)
+                .Include(me => me.Meal) // wystarczy Meal, Daily powoduje cykle
                 .ToListAsync();
 
             return Ok(mealEntries);
         }
 
-        /// <summary>
-        /// Retrieves all meal entries associated with a specific daily report.
-        /// </summary>
-        /// <param name="dailyId">The ID of the daily report.</param>
-        /// <returns>A list of <see cref="MealEntry"/> objects for the given daily report.</returns>
+        // GET: api/MealEntry/daily/5  ← KLUCZOWY endpoint dla Twojej apki
         [HttpGet("daily/{dailyId}")]
-        public async Task<ActionResult<IEnumerable<MealEntry>>> GetMealEntryByDaily(int id)
+        public async Task<ActionResult<IEnumerable<MealEntry>>> GetMealEntryByDaily(int dailyId)
         {
-            var mealEntry = await _context.MealEntries
+            var mealEntries = await _context.MealEntries
                 .Include(me => me.Meal)
-                .Include(me => me.DailyReport)
+                .Where(me => me.DailyReportId == dailyId)
                 .ToListAsync();
 
-            if (mealEntry.Count == 0)
+            if (mealEntries.Count == 0)
                 return NotFound("Meal entry not found");
 
-            return Ok(mealEntry);
+            return Ok(mealEntries);
         }
 
-        /// <summary>
-        /// Retrieves a specific meal entry by its ID.
-        /// </summary>
-        /// <param name="id">The ID of the meal entry.</param>
-        /// <returns>The <see cref="MealEntry"/> object if found, otherwise 404 Not Found.</returns>
+        // GET: api/MealEntry/5
         [HttpGet("{id}")]
         public async Task<ActionResult<MealEntry>> GetMealEntryById(int id)
         {
             var mealEntry = await _context.MealEntries
-                .Include (me => me.Meal)
-                .Include(me => me.DailyReport)
-                .FirstOrDefaultAsync();
+                .Include(me => me.Meal)
+                .FirstOrDefaultAsync(me => me.MealEntryId == id); // POPRAWKA: wcześniej brak filtra
 
             if (mealEntry == null)
                 return NotFound("Meal entry not found");
@@ -73,58 +57,74 @@ namespace FitApp.Controllers
             return Ok(mealEntry);
         }
 
-        /// <summary>
-        /// Creates a new meal entry linked to a daily report and a meal.
-        /// </summary>
-        /// <param name="newMeal">The new <see cref="MealEntry"/> object to create.</param>
-        /// <returns>The created <see cref="MealEntry"/> object with its ID.</returns>
+        // POST: api/MealEntry
         [HttpPost]
-        public async Task<ActionResult<MealEntry>> CreateMealEntry([FromBody] MealEntry newMeal)
+        public async Task<IActionResult> CreateMealEntry([FromBody] CreateMealEntryDto dto)
         {
-            var daily = await _context.DailyReports.FindAsync(newMeal.DailyReportId);
+            if (dto == null)
+                return BadRequest("Invalid data");
+
+            var daily = await _context.DailyReports
+                .FirstOrDefaultAsync(d => d.Id == dto.DailyReportId);
+
             if (daily == null)
-                return BadRequest("Daily not found");
+                return NotFound("DailyReport not found");
 
-            var meal = await _context.Meals.FindAsync(newMeal.MealId);
+            var meal = await _context.Meals
+                .FirstOrDefaultAsync(m => m.MealId == dto.MealId);
+
             if (meal == null)
-                return BadRequest("Meal not found");
+                return NotFound("Meal not found");
 
-            _context.MealEntries.Add(newMeal);
+            // 1. Dodanie wpisu
+            var mealEntry = new MealEntry
+            {
+                DailyReportId = dto.DailyReportId,
+                MealId = dto.MealId,
+                MealEntryQuantity = dto.MealEntryQuantity,
+                MealEntryDate = dto.MealEntryDate
+            };
+
+            _context.MealEntries.Add(mealEntry);
+
+            // 2. ZABEZPIECZENIE NA NULL (KLUCZ!)
+            daily.DailyReportProtein ??= 0;
+            daily.DailyReportCarbon ??= 0;
+            daily.DailyReportFat ??= 0;
+
+            var qty = dto.MealEntryQuantity;
+
+            // 3. Aktualizacja sum dziennych (z bazy Meal, NIE z navigation)
+            daily.DailyReportCalories += meal.MealCalories * qty;
+            daily.DailyReportProtein += meal.MealProtein * qty;
+            daily.DailyReportCarbon += meal.MealCarbon * qty;
+            daily.DailyReportFat += meal.MealFat * qty;
+
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(CreateMealEntry), new {id = newMeal.MealEntryId}, newMeal);
+            return Ok(mealEntry.MealEntryId);
         }
 
-        /// <summary>
-        /// Updates an existing meal entry.
-        /// </summary>
-        /// <param name="id">The ID of the meal entry to update.</param>
-        /// <param name="updatedEntry">The updated <see cref="MealEntry"/> object.</param>
-        /// <returns>No content if successful, otherwise 400 or 404 error.</returns>
+        // PUT: api/MealEntry/5
         [HttpPut("{id}")]
         public async Task<IActionResult> EditMealEntry(int id, [FromBody] MealEntry updatedEntry)
         {
             if (id != updatedEntry.MealEntryId)
-                return BadRequest("The ID in the address does not match the ID of the entry");
+                return BadRequest("ID mismatch");
 
             var existingEntry = await _context.MealEntries.FindAsync(id);
-            if (existingEntry == null) 
+            if (existingEntry == null)
                 return NotFound("Entry not found");
 
             existingEntry.MealId = updatedEntry.MealId;
             existingEntry.DailyReportId = updatedEntry.DailyReportId;
             existingEntry.MealEntryQuantity = updatedEntry.MealEntryQuantity;
-            existingEntry.MealEntryDate = updatedEntry.MealEntryDate;
 
             await _context.SaveChangesAsync();
-            return NoContent();
+            return Ok(existingEntry);
         }
 
-        /// <summary>
-        /// Deletes a meal entry by its ID.
-        /// </summary>
-        /// <param name="id">The ID of the meal entry to delete.</param>
-        /// <returns>No content if successful, otherwise 404 error if not found.</returns>
+        // DELETE: api/MealEntry/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMealEntry(int id)
         {
@@ -134,9 +134,7 @@ namespace FitApp.Controllers
 
             _context.MealEntries.Remove(entry);
             await _context.SaveChangesAsync();
-            return NoContent();
+            return Ok();
         }
-
-
     }
 }
