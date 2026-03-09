@@ -1,4 +1,4 @@
-# FitApp API
+# 📖 FitApp API 📡
 
 Backend REST API for the **FitApp fitness tracking application**.  
 The API manages users, daily reports, meals and hydration tracking.
@@ -7,7 +7,10 @@ The application allows users to track calories, macronutrients and water intake 
 
 ---
 
-# Tech stack
+# 🛠 Tech stack
+<p>
+<img src="https://skillicons.dev/icons?i=cs,dotnet,visualstudio,git,github&theme=dark"/>
+</p>
 
 - ASP.NET Core (.NET 8)
 - Entity Framework Core
@@ -17,7 +20,7 @@ The application allows users to track calories, macronutrients and water intake 
 
 ---
 
-# Features
+# 🚀 Features
 
 - user registration and login
 - creating daily reports
@@ -29,7 +32,7 @@ The application allows users to track calories, macronutrients and water intake 
 
 ---
 
-# API Structure
+# 📂 API Structure
 
 Main controllers implemented in the project:
 
@@ -99,7 +102,7 @@ Endpoints include:
 ```
 ---
 
-# Running the project locally
+# ⚙️ Running the project locally
 
 Because the Azure deployment used during development has been disabled, the application must be run locally.
 
@@ -140,7 +143,7 @@ https://localhost:5001
 ```
 ---
 
-# Project purpose
+# 📊 Project purpose
 
 This project was developed as part of an **engineering thesis project** focused on building a full-stack application consisting of:
 
@@ -150,7 +153,7 @@ This project was developed as part of an **engineering thesis project** focused 
 
 ---
 
-## Architecture
+# 🧱 Architecture
 
 ```mermaid
 flowchart TD
